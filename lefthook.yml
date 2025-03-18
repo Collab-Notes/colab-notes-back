@@ -1,0 +1,21 @@
+# git hooks configuration
+# -> https://lefthook.dev/configuration/
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      run: go vet "{staged_files}"
+
+    staticcheck:
+      run: staticcheck "{staged_files}"
+
+    format:
+      run: go fmt "{staged_files}"
+      stage_fixed: true
+#####
+# pre-push:
+#   parallel: true
+#   commands:
+#     build:
+#       run: pnpm run build
