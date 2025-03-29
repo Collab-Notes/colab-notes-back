@@ -2,14 +2,15 @@ package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // USUARIOS
 type User struct {
-	ID               uint              `gorm:"primaryKey"`
+	ID               uuid.UUID         `gorm:"type:uuid;primaryKey"`
 	Name             string            `gorm:"type:varchar(100);not null"`
 	Email            string            `gorm:"type:varchar(150);unique;not null"`
-	PasswordHash     string            `gorm:"type:text;not null"`
 	CreatedAt        time.Time         `gorm:"autoCreateTime"`
 	Vaults           []Vault           `gorm:"foreignKey:OwnerID"` // Relación: owns (tiene cajas)
 	VaultPermissions []VaultPermission `gorm:"foreignKey:UserID"`  // Relación: puede acceder a cajas
@@ -19,7 +20,7 @@ type User struct {
 // CAJAS (VAULTS)
 type Vault struct {
 	ID          uint              `gorm:"primaryKey"`
-	OwnerID     uint              `gorm:"not null"`
+	OwnerID     uuid.UUID         `gorm:"type:uuid;not null"`
 	Name        string            `gorm:"type:varchar(255);not null"`
 	CreatedAt   time.Time         `gorm:"autoCreateTime"`
 	Owner       User              `gorm:"foreignKey:OwnerID"`
@@ -31,7 +32,7 @@ type Vault struct {
 type Note struct {
 	ID              uint             `gorm:"primaryKey"`
 	VaultID         uint             `gorm:"not null"`
-	OwnerID         uint             `gorm:"not null"`
+	OwnerID         uuid.UUID        `gorm:"type:uuid;not null"`
 	Title           string           `gorm:"type:varchar(255);not null"`
 	Content         string           `gorm:"type:text;not null"`
 	IsPublic        bool             `gorm:"default:false"`
@@ -46,22 +47,22 @@ type Note struct {
 
 // PERMISOS DE CAJAS (VAULT_PERMISSIONS)
 type VaultPermission struct {
-	ID          uint   `gorm:"primaryKey"`
-	VaultID     uint   `gorm:"not null"`
-	UserID      uint   `gorm:"not null"`
-	AccessLevel string `gorm:"type:varchar(50);not null"`
-	Vault       Vault  `gorm:"foreignKey:VaultID"`
-	User        User   `gorm:"foreignKey:UserID"`
+	ID          uint      `gorm:"primaryKey"`
+	VaultID     uint      `gorm:"not null"`
+	UserID      uuid.UUID `gorm:"type:uuid;not null"`
+	AccessLevel string    `gorm:"type:varchar(50);not null"`
+	Vault       Vault     `gorm:"foreignKey:VaultID"`
+	User        User      `gorm:"foreignKey:UserID"`
 }
 
 // PERMISOS DE NOTAS (NOTE_PERMISSIONS)
 type NotePermission struct {
-	ID          uint   `gorm:"primaryKey"`
-	NoteID      uint   `gorm:"not null"`
-	UserID      uint   `gorm:"not null"`
-	AccessLevel string `gorm:"type:varchar(50);not null"`
-	Note        Note   `gorm:"foreignKey:NoteID"`
-	User        User   `gorm:"foreignKey:UserID"`
+	ID          uint      `gorm:"primaryKey"`
+	NoteID      uint      `gorm:"not null"`
+	UserID      uuid.UUID `gorm:"type:uuid;not null"`
+	AccessLevel string    `gorm:"type:varchar(50);not null"`
+	Note        Note      `gorm:"foreignKey:NoteID"`
+	User        User      `gorm:"foreignKey:UserID"`
 }
 
 // ETIQUETAS (TAGS)
