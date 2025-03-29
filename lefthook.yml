@@ -3,14 +3,18 @@
 
 pre-commit:
   parallel: true
+
   commands:
     lint:
+      glob: "*.go"
       run: go vet "{staged_files}"
 
     staticcheck:
+      glob: "*.go"
       run: staticcheck "{staged_files}"
 
     format:
+      glob: "*.go"
       run: go fmt "{staged_files}"
       stage_fixed: true
 #####
