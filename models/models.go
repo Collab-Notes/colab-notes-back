@@ -22,10 +22,12 @@ type Vault struct {
 	ID          uint              `gorm:"primaryKey"`
 	OwnerID     uuid.UUID         `gorm:"type:uuid;not null"`
 	Name        string            `gorm:"type:varchar(255);not null"`
+	Description string            `gorm:"type:text"`
 	CreatedAt   time.Time         `gorm:"autoCreateTime"`
 	Owner       User              `gorm:"foreignKey:OwnerID"`
 	Notes       []Note            `gorm:"foreignKey:VaultID"` // Relación: contiene notas
 	Permissions []VaultPermission `gorm:"foreignKey:VaultID"` // Relación: permisos asignados
+	//Collaborators []User            `gorm:"many2many:collaborator_roles"` // Relación: colaboradores
 }
 
 // NOTAS (NOTES)

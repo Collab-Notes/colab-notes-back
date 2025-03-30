@@ -5,7 +5,9 @@ import (
 	"log"
 
 	"github.com/Collab-Notes/colab-notes-back/common"
+	"github.com/Collab-Notes/colab-notes-back/controllers"
 	"github.com/Collab-Notes/colab-notes-back/models"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -27,4 +29,13 @@ func main() {
 	}
 
 	fmt.Println("Migración completada exitosamente.")
+
+	//enrutador mediante gin
+	router := gin.Default()
+
+	router.POST("/vaults", controllers.CreateVault(common.DB))
+	router.GET("/vaults/:id", controllers.GetVault(common.DB))
+
+	router.Run(":8080")
+
 }
