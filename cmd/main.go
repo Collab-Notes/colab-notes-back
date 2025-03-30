@@ -36,6 +36,9 @@ func main() {
 	router.POST("/vaults", controllers.CreateVault(common.DB))
 	router.GET("/vaults/:id", controllers.GetVault(common.DB))
 
+	//notes
+	router.POST("/vaults/:id/notes", controllers.CreateNote(common.DB))
+
 	router.Run(":8080")
 
 }
