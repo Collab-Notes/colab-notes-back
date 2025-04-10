@@ -32,8 +32,20 @@ func main() {
 
 	fmt.Println("Migración completada exitosamente.")
 
-	// Configurar enrutador
+
+	//enrutador mediante gin
 	router := gin.Default()
+
+	// Endpoint 1: Buscar usuarios
+	router.GET("/users/search", controllers.SearchUsersHandler)
+
+	// Endpoint 3: Invitar a un usuario a un vault
+	router.POST("/vaults/:id/invite", controllers.InviteUserToVaultHandler)
+
+	// Endpoint 5:
+	router.PATCH("/vaults/:id/role", controllers.UpdateVaultRoleHandler)
+
+
 
 	// Rutas
 	router.POST("/vaults", controllers.CreateVault())
@@ -42,4 +54,5 @@ func main() {
 
 	// Iniciar servidor
 	router.Run(":8080")
+
 }
