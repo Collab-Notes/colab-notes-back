@@ -32,7 +32,6 @@ func main() {
 
 	fmt.Println("Migración completada exitosamente.")
 
-
 	//enrutador mediante gin
 	router := gin.Default()
 
@@ -44,8 +43,6 @@ func main() {
 
 	// Endpoint 5:
 	router.PATCH("/vaults/:id/role", controllers.UpdateVaultRoleHandler)
-
-
 
 	// Rutas
 	router.POST("/vaults", controllers.CreateVault())
