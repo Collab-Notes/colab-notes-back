@@ -5,13 +5,17 @@ import (
 	"log"
 
 	"github.com/Collab-Notes/colab-notes-back/common"
+	"github.com/Collab-Notes/colab-notes-back/controllers"
 	"github.com/Collab-Notes/colab-notes-back/models"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	// Cargar configuración y conectar a la base de datos
 	config := common.LoadConfig()
 	common.ConnectDB(config)
 
+	// Migrar modelos
 	err := common.DB.AutoMigrate(
 		&models.User{},
 		&models.Vault{},
@@ -27,4 +31,15 @@ func main() {
 	}
 
 	fmt.Println("Migración completada exitosamente.")
+
+	// Configurar enrutador
+	router := gin.Default()
+
+	// Rutas
+	router.POST("/vaults", controllers.CreateVault())
+	router.GET("/vaults/:id", controllers.GetVault())
+	router.POST("/vaults/:id/notes", controllers.CreateNote())
+
+	// Iniciar servidor
+	router.Run(":8080")
 }
