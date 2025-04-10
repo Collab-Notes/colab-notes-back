@@ -27,7 +27,7 @@ type Vault struct {
 	Owner       User              `gorm:"foreignKey:OwnerID"`
 	Notes       []Note            `gorm:"foreignKey:VaultID"` // Relación: contiene notas
 	Permissions []VaultPermission `gorm:"foreignKey:VaultID"` // Relación: permisos asignados
-	//Collaborators []User            `gorm:"many2many:collaborator_roles"` // Relación: colaboradores
+
 }
 
 // NOTAS (NOTES)

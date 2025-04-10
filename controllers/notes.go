@@ -2,14 +2,12 @@ package controllers
 
 import (
 	"net/http"
-
 	"time"
 
+	"github.com/Collab-Notes/colab-notes-back/common"
 	"github.com/Collab-Notes/colab-notes-back/models"
-
 	"github.com/gin-gonic/gin"
-	//"github.com/google/uuid"
-	"gorm.io/gorm"
+	"github.com/google/uuid"
 )
 
 type CreateNotesRequest struct {
@@ -17,8 +15,8 @@ type CreateNotesRequest struct {
 	Title  string `json:"title" binding:"required"`
 }
 
-// POST (TO CREATE A NEW VAULT)
-func CreateNote(db *gorm.DB) gin.HandlerFunc {
+// POST (TO CREATE A NEW NOTE)
+func CreateNote() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req CreateNotesRequest
 
@@ -28,66 +26,62 @@ func CreateNote(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		// Generar un OwnerID único
+		// Obtener el ID del Vault desde los parámetros de la URL
 		VaultID := c.Param("id")
 
-		// Verificar si el vault existe
+		// Verificar si el Vault existe
 		var vault models.Vault
-		if err := db.First(&vault, "id = ?", VaultID).Error; err != nil {
-
-			//devolver error si no encuentra el vault
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Vault no encontrado"})
+		if err := common.DB.First(&vault, "id = ?", VaultID).Error; err != nil {
+			// Devolver error si no encuentra el Vault
+			c.JSON(http.StatusNotFound, gin.H{"error": "Vault no encontrado"})
 			return
-
 		}
 
-		//verificación de permisos
+		// Verificación de permisos
 		if vault.OwnerID.String() != req.UserID {
-
 			var permission models.VaultPermission
-			if err := db.First(&permission, "vault_id = ? AND user_id = ?", vault.ID, req.UserID).Error; err != nil {
+			if err := common.DB.First(&permission, "vault_id = ? AND user_id = ?", vault.ID, req.UserID).Error; err != nil {
 				// Si no existe, devolver error
-				c.JSON(http.StatusForbidden, gin.H{"error": "No tienes permiso para acceder a este vault"})
+				c.JSON(http.StatusForbidden, gin.H{"error": "No tienes permiso para acceder a este Vault"})
 				return
 			}
-
 		}
 
-		//para la creación de las notas
+		// Crear la nueva nota
 		note := models.Note{
 			ID:        vault.ID,
 			VaultID:   vault.ID,
-			OwnerID:   vault.OwnerID,
+			OwnerID:   uuid.MustParse(req.UserID),
 			Title:     req.Title,
 			CreatedAt: time.Now(),
 		}
 
 		// Guardar en la base de datos
-		if err := db.Create(&note).Error; err != nil {
+		if err := common.DB.Create(&note).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al crear la nota"})
 			return
 		}
 
-		// Responder con el Vault creado
+		// Responder con la nota creada
 		c.JSON(http.StatusCreated, gin.H{
 			"id":      note.ID,
-			"message": "note created successfully",
+			"message": "Note created successfully",
 		})
 	}
 }
 
-// GET (TO GET ALL VAULTS)
-func GetNote(db *gorm.DB) gin.HandlerFunc {
+// GET (TO GET ALL NOTES)
+func GetNote() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var Note []models.Vault
+		var notes []models.Note
 
-		// Obtener todos los Vaults de la base de datos
-		if err := db.Find(&Note).Error; err != nil {
+		// Obtener todas las notas de la base de datos
+		if err := common.DB.Find(&notes).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener las notas"})
 			return
 		}
 
-		// Responder con la lista de Vaults
-		c.JSON(http.StatusOK, Note)
+		// Responder con la lista de notas
+		c.JSON(http.StatusOK, notes)
 	}
 }

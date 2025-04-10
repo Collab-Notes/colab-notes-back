@@ -11,9 +11,11 @@ import (
 )
 
 func main() {
+	// Cargar configuración y conectar a la base de datos
 	config := common.LoadConfig()
 	common.ConnectDB(config)
 
+	// Migrar modelos
 	err := common.DB.AutoMigrate(
 		&models.User{},
 		&models.Vault{},
@@ -30,15 +32,14 @@ func main() {
 
 	fmt.Println("Migración completada exitosamente.")
 
-	//enrutador mediante gin
+	// Configurar enrutador
 	router := gin.Default()
 
-	router.POST("/vaults", controllers.CreateVault(common.DB))
-	router.GET("/vaults/:id", controllers.GetVault(common.DB))
+	// Rutas
+	router.POST("/vaults", controllers.CreateVault())
+	router.GET("/vaults/:id", controllers.GetVault())
+	router.POST("/vaults/:id/notes", controllers.CreateNote())
 
-	//notes
-	router.POST("/vaults/:id/notes", controllers.CreateNote(common.DB))
-
+	// Iniciar servidor
 	router.Run(":8080")
-
 }
