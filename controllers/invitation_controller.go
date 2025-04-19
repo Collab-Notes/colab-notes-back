@@ -2,19 +2,19 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/Collab-Notes/colab-notes-back/common"
 	"github.com/Collab-Notes/colab-notes-back/models"
 	"github.com/Collab-Notes/colab-notes-back/repository"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // InviteUserToVaultHandler maneja la invitación de un usuario a un vault.
 // URL: POST /vaults/:id/invite
 func InviteUserToVaultHandler(c *gin.Context) {
 	vaultIDStr := c.Param("id")
-	vaultID, err := strconv.Atoi(vaultIDStr)
+	vaultID, err := uuid.Parse(vaultIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de vault inválido"})
 		return
@@ -35,14 +35,14 @@ func InviteUserToVaultHandler(c *gin.Context) {
 	}
 
 	// Verificar si ya tiene un permiso en el vault
-	if _, err := repository.GetVaultPermission(uint(vaultID), user.ID); err == nil {
+	if _, err := repository.GetVaultPermission(vaultID, user.ID); err == nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "El usuario ya pertenece al vault"})
 		return
 	}
 
 	// Crear el permiso directamente como "collaborator"
 	newPermission := models.VaultPermission{
-		VaultID:     uint(vaultID),
+		VaultID:     vaultID,
 		UserID:      user.ID,
 		AccessLevel: "collaborator",
 	}
