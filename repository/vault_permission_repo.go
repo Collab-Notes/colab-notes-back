@@ -7,7 +7,7 @@ import (
 )
 
 // GetVaultPermission busca si ya existe un permiso para el usuario en el vault.
-func GetVaultPermission(vaultID uint, userID uuid.UUID) (*models.VaultPermission, error) {
+func GetVaultPermission(vaultID uuid.UUID, userID uuid.UUID) (*models.VaultPermission, error) {
 	var vp models.VaultPermission
 	err := common.DB.Where("vault_id = ? AND user_id = ?", vaultID, userID).First(&vp).Error
 	return &vp, err

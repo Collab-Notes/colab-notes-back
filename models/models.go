@@ -19,7 +19,7 @@ type User struct {
 
 // CAJAS (VAULTS)
 type Vault struct {
-	ID          uint              `gorm:"primaryKey"`
+	ID          uuid.UUID         `gorm:"type:uuid;primaryKey"`
 	OwnerID     uuid.UUID         `gorm:"type:uuid;not null"`
 	Name        string            `gorm:"type:varchar(255);not null"`
 	Description string            `gorm:"type:text"`
@@ -32,8 +32,8 @@ type Vault struct {
 
 // NOTAS (NOTES)
 type Note struct {
-	ID              uint             `gorm:"primaryKey"`
-	VaultID         uint             `gorm:"not null"`
+	ID              uuid.UUID        `gorm:"type:uuid;primaryKey"`
+	VaultID         uuid.UUID        `gorm:"not null"`
 	OwnerID         uuid.UUID        `gorm:"type:uuid;not null"`
 	Title           string           `gorm:"type:varchar(255);not null"`
 	Content         string           `gorm:"type:text;not null"`
@@ -49,8 +49,8 @@ type Note struct {
 
 // PERMISOS DE CAJAS (VAULT_PERMISSIONS)
 type VaultPermission struct {
-	ID          uint      `gorm:"primaryKey"`
-	VaultID     uint      `gorm:"not null"`
+	ID          uuid.UUID `gorm:"primaryKey"`
+	VaultID     uuid.UUID `gorm:"not null"`
 	UserID      uuid.UUID `gorm:"type:uuid;not null"`
 	AccessLevel string    `gorm:"type:varchar(50);not null"`
 	Vault       Vault     `gorm:"foreignKey:VaultID"`
@@ -59,8 +59,8 @@ type VaultPermission struct {
 
 // PERMISOS DE NOTAS (NOTE_PERMISSIONS)
 type NotePermission struct {
-	ID          uint      `gorm:"primaryKey"`
-	NoteID      uint      `gorm:"not null"`
+	ID          uuid.UUID `gorm:"primaryKey"`
+	NoteID      uuid.UUID `gorm:"not null"`
 	UserID      uuid.UUID `gorm:"type:uuid;not null"`
 	AccessLevel string    `gorm:"type:varchar(50);not null"`
 	Note        Note      `gorm:"foreignKey:NoteID"`
@@ -77,16 +77,16 @@ type Tag struct {
 // TABLA INTERMEDIA DE ETIQUETAS PARA NOTAS (NOTE_TAGS)
 // Clave compuesta formada por NoteID y TagID
 type NoteTag struct {
-	NoteID uint `gorm:"primaryKey;not null"`
-	TagID  uint `gorm:"primaryKey;not null"`
-	Note   Note `gorm:"foreignKey:NoteID"`
-	Tag    Tag  `gorm:"foreignKey:TagID"`
+	NoteID uuid.UUID `gorm:"primaryKey;not null"`
+	TagID  uint      `gorm:"primaryKey;not null"`
+	Note   Note      `gorm:"foreignKey:NoteID"`
+	Tag    Tag       `gorm:"foreignKey:TagID"`
 }
 
 // ARCHIVOS ADJUNTOS DE NOTAS (NOTE_ATTACHMENTS)
 type NoteAttachment struct {
 	ID         uint      `gorm:"primaryKey"`
-	NoteID     uint      `gorm:"not null"`
+	NoteID     uuid.UUID `gorm:"not null"`
 	FileURL    string    `gorm:"type:text;not null"`
 	LineNumber int       `gorm:"not null"`
 	UploadedAt time.Time `gorm:"autoCreateTime"`

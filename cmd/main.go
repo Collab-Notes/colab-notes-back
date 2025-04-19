@@ -50,6 +50,6 @@ func main() {
 	router.POST("/vaults/:id/notes", controllers.CreateNote())
 
 	// Iniciar servidor
-	router.Run(":8080")
+	router.Run(":8081")
 
 }
