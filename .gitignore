@@ -26,3 +26,5 @@ go.work.sum
 
 # Swagger documentation folder
 docs/
+
+tmp/
