@@ -1,3 +1,10 @@
+// @title Collab Notes API
+// @version 1.0
+// @description API para la aplicación de notas colaborativas.
+// @host localhost:8080
+// @BasePath /
+// @schemes http
+
 package main
 
 import (
@@ -8,6 +15,10 @@ import (
 	"github.com/Collab-Notes/colab-notes-back/controllers"
 	"github.com/Collab-Notes/colab-notes-back/models"
 	"github.com/gin-gonic/gin"
+
+	_ "github.com/Collab-Notes/colab-notes-back/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -48,6 +59,9 @@ func main() {
 	router.POST("/vaults", controllers.CreateVault())
 	router.GET("/vaults/:id", controllers.GetVault())
 	router.POST("/vaults/:id/notes", controllers.CreateNote())
+
+	// Configuración de Swagger
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Iniciar servidor
 	router.Run(":8081")

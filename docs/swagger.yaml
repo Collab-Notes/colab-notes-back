@@ -1,0 +1,324 @@
+basePath: /
+definitions:
+  controllers.InviteUserRequest:
+    properties:
+      username:
+        example: juanito123
+        type: string
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        example: Ocurrio un error inesperado en el servidor
+        type: string
+    type: object
+  dto.MessageResponse:
+    properties:
+      message:
+        example: Rol actualizado exitosamente
+        type: string
+    type: object
+  dto.UpdateVaultRoleRequest:
+    properties:
+      new_role:
+        example: viewer
+        type: string
+      username:
+        example: juanito123
+        type: string
+    type: object
+  models.Note:
+    properties:
+      attachments:
+        description: 'Relación: archivos adjuntos'
+        items:
+          $ref: '#/definitions/models.NoteAttachment'
+        type: array
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      isPublic:
+        type: boolean
+      notePermissions:
+        description: 'Relación: permisos de nota'
+        items:
+          $ref: '#/definitions/models.NotePermission'
+        type: array
+      noteTags:
+        description: 'Relación: etiquetado'
+        items:
+          $ref: '#/definitions/models.NoteTag'
+        type: array
+      owner:
+        $ref: '#/definitions/models.User'
+      ownerID:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      vault:
+        $ref: '#/definitions/models.Vault'
+      vaultID:
+        type: string
+    type: object
+  models.NoteAttachment:
+    properties:
+      fileURL:
+        type: string
+      id:
+        type: integer
+      lineNumber:
+        type: integer
+      note:
+        $ref: '#/definitions/models.Note'
+      noteID:
+        type: string
+      uploadedAt:
+        type: string
+    type: object
+  models.NotePermission:
+    properties:
+      accessLevel:
+        type: string
+      id:
+        type: string
+      note:
+        $ref: '#/definitions/models.Note'
+      noteID:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      userID:
+        type: string
+    type: object
+  models.NoteTag:
+    properties:
+      note:
+        $ref: '#/definitions/models.Note'
+      noteID:
+        type: string
+      tag:
+        $ref: '#/definitions/models.Tag'
+      tagID:
+        type: integer
+    type: object
+  models.Tag:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      noteTags:
+        description: 'Relación: notas asociadas'
+        items:
+          $ref: '#/definitions/models.NoteTag'
+        type: array
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      notePermissions:
+        description: 'Relación: puede editar notas'
+        items:
+          $ref: '#/definitions/models.NotePermission'
+        type: array
+      vaultPermissions:
+        description: 'Relación: puede acceder a cajas'
+        items:
+          $ref: '#/definitions/models.VaultPermission'
+        type: array
+      vaults:
+        description: 'Relación: owns (tiene cajas)'
+        items:
+          $ref: '#/definitions/models.Vault'
+        type: array
+    type: object
+  models.Vault:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      notes:
+        description: 'Relación: contiene notas'
+        items:
+          $ref: '#/definitions/models.Note'
+        type: array
+      owner:
+        $ref: '#/definitions/models.User'
+      ownerID:
+        type: string
+      permissions:
+        description: 'Relación: permisos asignados'
+        items:
+          $ref: '#/definitions/models.VaultPermission'
+        type: array
+    type: object
+  models.VaultPermission:
+    properties:
+      accessLevel:
+        type: string
+      id:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      userID:
+        type: string
+      vault:
+        $ref: '#/definitions/models.Vault'
+      vaultID:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API para la aplicación de notas colaborativas.
+  title: Collab Notes API
+  version: "1.0"
+paths:
+  /users/search:
+    get:
+      consumes:
+      - application/json
+      description: Busca usuarios cuyo nombre coincida parcialmente con el query enviado.
+      parameters:
+      - description: Texto de búsqueda parcial
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Parámetro 'q' faltante
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Error al buscar en la base de datos
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Buscar usuarios
+      tags:
+      - Usuarios
+  /vaults/{id}/invite:
+    post:
+      consumes:
+      - application/json
+      description: Permite invitar a un usuario existente a un vault como colaborador
+      parameters:
+      - description: ID del Vault
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Nombre de usuario
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.InviteUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Invitar a un usuario a un vault
+      tags:
+      - Vaults
+  /vaults/{id}/role:
+    patch:
+      consumes:
+      - application/json
+      description: Permite cambiar el rol de un colaborador existente en un vault
+        (por ejemplo, de viewer a collaborator).
+      parameters:
+      - description: ID del Vault
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos para actualizar el rol
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateVaultRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Actualizar el rol de un usuario en un vault
+      tags:
+      - Vaults
+schemes:
+- http
+swagger: "2.0"
