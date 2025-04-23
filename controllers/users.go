@@ -54,3 +54,14 @@ func GetUserData() gin.HandlerFunc {
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// UserDataResponse representa la estructura de respuesta para el endpoint GetUserData
+type UserDataResponse struct {
+	User struct {
+		ID        string `json:"id" example:"a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"`
+		Name      string `json:"name" example:"John Doe"`
+		Email     string `json:"email" example:"john@example.com"`
+		CreatedAt string `json:"createdAt" example:"2023-01-01T00:00:00Z"`
+	} `json:"user"`
+	Vaults []models.Vault `json:"vaults"`
+}
