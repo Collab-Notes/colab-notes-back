@@ -21,7 +21,17 @@ type CollaboratorRole struct {
 	Role   string    `json:"role" binding:"required"`
 }
 
-// POST (TO CREATE A NEW VAULT)
+// CreateVault (endpoint)
+// @Summary Crear un nuevo vault
+// @Description Crea un vault con nombre, descripción y colaboradores de manera opcional.
+// @Tags Vaults
+// @Accept json
+// @Produce json
+// @Param request body CreateVaultRequest true "Datos del vault"
+// @Success 201 {object} map[string]interface{} "Vault creado"
+// @Failure 400 {object} map[string]string "Error en la solicitud"
+// @Failure 500 {object} map[string]string "Error interno"
+// @Router /vaults [post]
 func CreateVault() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req CreateVaultRequest
@@ -106,7 +116,14 @@ func CreateVault() gin.HandlerFunc {
 	}
 }
 
-// GET (TO GET ALL VAULTS)
+// GetVault (endpoint)
+// @Summary Obtener todos los vaults
+// @Description Devuelve todos los vaults existentes.
+// @Tags Vaults
+// @Produce json
+// @Success 200 {array} models.Vault "Lista de vaults"
+// @Failure 500 {object} map[string]string "Error interno"
+// @Router /vaults [get]
 func GetVault() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var vaults []models.Vault

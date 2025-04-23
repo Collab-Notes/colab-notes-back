@@ -15,7 +15,20 @@ type CreateNotesRequest struct {
 	Title  string `json:"title" binding:"required"`
 }
 
-// POST (TO CREATE A NEW NOTE)
+// CreateNote (endpoint)
+// @Summary Crear una nueva nota
+// @Description Crea una nueva nota dentro de un vault específico
+// @Tags Notes
+// @Accept json
+// @Produce json
+// @Param id path string true "ID del Vault" example("123e4567-e89b-12d3-a456-426614174000")
+// @Param request body CreateNotesRequest true "Datos de la nota"
+// @Success 201 {object} map[string]interface{} "Nota creada"
+// @Failure 400 {object} map[string]string "Error en la solicitud"
+// @Failure 403 {object} map[string]string "Permisos insuficientes"
+// @Failure 404 {object} map[string]string "Vault no encontrado"
+// @Failure 500 {object} map[string]string "Error interno"
+// @Router /vaults/{id}/notes [post]
 func CreateNote() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req CreateNotesRequest
@@ -70,7 +83,14 @@ func CreateNote() gin.HandlerFunc {
 	}
 }
 
-// GET (TO GET ALL NOTES)
+// GetNote (endpoint)
+// @Summary Obtener todas las notas
+// @Description Devuelve una lista de todas las notas existentes
+// @Tags Notes
+// @Produce json
+// @Success 200 {array} models.Note "Lista de notas"
+// @Failure 500 {object} map[string]string "Error interno"
+// @Router /notes [get]
 func GetNote() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var notes []models.Note

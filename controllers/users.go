@@ -9,7 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GET (TO GET ALL VAULTS)
+// GetUserData (endpoint)
+// @Summary Obtener datos de usuario y sus vaults
+// @Description Devuelve la información del usuario junto con todos los vaults donde es propietario o tiene permisos
+// @Tags Users
+// @Produce json
+// @Param id path string true "ID del usuario" example("a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8")
+// @Success 200 {object} UserDataResponse
+// @Failure 404 {object} map[string]string "Usuario no encontrado"
+// @Failure 500 {object} map[string]string "Error al obtener los vaults"
+// @Router /users/{id} [get]
 func GetUserData() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")

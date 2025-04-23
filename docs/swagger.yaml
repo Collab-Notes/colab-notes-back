@@ -1,5 +1,39 @@
 basePath: /
 definitions:
+  controllers.CollaboratorRole:
+    properties:
+      role:
+        type: string
+      user_id:
+        type: string
+    required:
+    - role
+    - user_id
+    type: object
+  controllers.CreateNotesRequest:
+    properties:
+      title:
+        type: string
+      user_id:
+        type: string
+    required:
+    - title
+    - user_id
+    type: object
+  controllers.CreateVaultRequest:
+    properties:
+      collaborators:
+        items:
+          $ref: '#/definitions/controllers.CollaboratorRole'
+        type: array
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - description
+    - name
+    type: object
   controllers.InviteUserRequest:
     properties:
       username:
@@ -191,6 +225,27 @@ info:
   title: Collab Notes API
   version: "1.0"
 paths:
+  /notes:
+    get:
+      description: Devuelve una lista de todas las notas existentes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de notas
+          schema:
+            items:
+              $ref: '#/definitions/models.Note'
+            type: array
+        "500":
+          description: Error interno
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener todas las notas
+      tags:
+      - Notes
   /users/search:
     get:
       consumes:
@@ -222,6 +277,62 @@ paths:
       summary: Buscar usuarios
       tags:
       - Usuarios
+  /vaults:
+    get:
+      description: Devuelve todos los vaults existentes.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de vaults
+          schema:
+            items:
+              $ref: '#/definitions/models.Vault'
+            type: array
+        "500":
+          description: Error interno
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener todos los vaults
+      tags:
+      - Vaults
+    post:
+      consumes:
+      - application/json
+      description: Crea un vault con nombre, descripción y colaboradores de manera
+        opcional.
+      parameters:
+      - description: Datos del vault
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateVaultRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Vault creado
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Error en la solicitud
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Error interno
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Crear un nuevo vault
+      tags:
+      - Vaults
   /vaults/{id}/invite:
     post:
       consumes:
@@ -275,6 +386,59 @@ paths:
       summary: Invitar a un usuario a un vault
       tags:
       - Vaults
+  /vaults/{id}/notes:
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva nota dentro de un vault específico
+      parameters:
+      - description: ID del Vault
+        example: '"123e4567-e89b-12d3-a456-426614174000"'
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos de la nota
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateNotesRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Nota creada
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Error en la solicitud
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Permisos insuficientes
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Vault no encontrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Error interno
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Crear una nueva nota
+      tags:
+      - Notes
   /vaults/{id}/role:
     patch:
       consumes:
