@@ -59,6 +59,8 @@ func main() {
 	router.GET("/vaults/:id", controllers.GetUserData())
 	router.POST("/vaults/:id/notes", controllers.CreateNote())
 
+	router.GET("/notes", controllers.GetNote())
+
 	// Configuración de Swagger
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

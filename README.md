@@ -63,3 +63,7 @@ For development, you can use Air to automatically reload the application when co
     ```
 
 Air will watch for file changes and automatically restart the server.
+
+### Access the docs with
+
+<http://localhost:8081/swagger/index.html>
